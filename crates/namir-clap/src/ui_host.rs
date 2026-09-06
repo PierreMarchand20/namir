@@ -189,6 +189,12 @@ impl UiHost for ClapUiHost {
             audio_mode: None,
             unsaved_changes: self.inner.is_dirty(),
             notices: self.inner.notices(),
+            // See `UiSnapshot::independent_channels_relevant`'s own doc comment: this crate's
+            // `audio-ports` extension declares exactly one, two-channel port (`audio_ports_ext.rs`)
+            // and always negotiates `ChannelConfig::Stereo` (`audio.rs`/`shared.rs`) -- a genuinely
+            // independent pair of captured channels, unlike the standalone app, so the control has
+            // something real to do here.
+            independent_channels_relevant: true,
         }
     }
 

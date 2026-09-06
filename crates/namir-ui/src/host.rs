@@ -174,6 +174,22 @@ pub struct UiSnapshot {
     /// when the host knows of none (or has not looked yet), in which case the recall control
     /// renders disabled rather than vanishing -- see [`crate::render`].
     pub presets: Vec<PresetSummary>,
+    /// Prototype (`namir_params::global::INDEPENDENT_CHANNELS`): whether this session's channel
+    /// configuration is genuinely two independently-captured input channels (`ChannelConfig::
+    /// Stereo`), the only shape the control this flag gates has anything real to do. `false` means
+    /// "hide it," not "force it off" — the parameter itself is unaffected either way, only whether
+    /// [`crate::render`] draws a control for it.
+    ///
+    /// This crate cannot ask `namir-engine` for the real `ChannelConfig` itself (D-5.1's layering
+    /// table forbids the dependency — see this crate's own top doc comment), so each `UiHost`
+    /// states the answer for its own session instead, the same way [`Self::audio_mode`] already
+    /// does for a different host-shape fact. `namir-clap` always negotiates `Stereo` (its
+    /// `audio-ports` extension declares exactly one, two-channel port) and sets this `true`;
+    /// `namir-app` never captures two independently-captured channels today (only `Mono` or
+    /// `MonoToStereo`, one captured channel duplicated) and sets it `false` — see `stream.rs`'s own
+    /// documented gap. If the standalone ever gains real stereo capture, this is the one place
+    /// that needs to start answering truthfully instead of a fixed `false`.
+    pub independent_channels_relevant: bool,
 }
 
 impl Default for UiSnapshot {
@@ -193,6 +209,7 @@ impl Default for UiSnapshot {
             unsaved_changes: false,
             notices: Vec::new(),
             presets: Vec::new(),
+            independent_channels_relevant: false,
         }
     }
 }

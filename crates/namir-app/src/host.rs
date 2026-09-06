@@ -843,6 +843,10 @@ impl UiHost for AppHost {
             // Whatever the last off-thread enumeration produced -- a GUI frame never reads a
             // directory (`refresh_presets_if_stale` only ever *asks* for one).
             presets: self.presets.clone(),
+            // See `UiSnapshot::independent_channels_relevant`'s own doc comment: this build never
+            // captures two independently-captured input channels (`stream.rs`'s documented gap --
+            // only `Mono`/`MonoToStereo`), so the control has nothing real to do here.
+            independent_channels_relevant: false,
         }
     }
 
